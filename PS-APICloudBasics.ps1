@@ -8,6 +8,7 @@
 #-6. Build Server from Exisiting boot From Volume image
 #-7. Build Boot from volume Server
 #
+# API reference guide https://developer.rackspace.com/docs/cloud-servers/v2/developer-guide/#document-getting-started
 ###################################################################################################################
 # 1 - Auhtenticate to Rackspack to retrieve API token update %username% and api key 
 
