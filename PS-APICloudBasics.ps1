@@ -10,29 +10,47 @@
 #
 # API reference guide https://developer.rackspace.com/docs/cloud-servers/v2/developer-guide/#document-getting-started
 ###################################################################################################################
-# 1 - Auhtenticate to Rackspack to retrieve API token update %username% and api key 
+$CloudUsername = Read-Host "Enter cloud username"
+$APIkey = Read-Host "Enter API key"
+$CloudAccountNum = Read-Host "Enter cloud account number"
 
-$Auth = Invoke-RestMethod -Uri https://identity.api.rackspacecloud.com/v2.0/tokens -Method Post -Body '{"auth" : {"RAX-KSKEY:apiKeyCredentials" : {"username" : "%username%", "apiKey" : "3213654sdsdgffsdg54s65gf46sd54gsfd46g5"}}}' -ContentType application/json
+$obj = @{
+   auth = @{
+        "RAX-KSKEY:apiKeyCredentials" = 
+                    @{
+                    "apiKey" = $APIkey;
+                    "username" = $CloudUsername;
+        
+                    };     
+        };
+};  
+
+$Creds= $obj | ConvertTo-Json -Depth 10
+$Creds 
+
+
+# 1 - Auhtenticate to Rackspack to retrieve API token update %username% and api key 
+#$Auth = Invoke-RestMethod -Uri https://identity.api.rackspacecloud.com/v2.0/tokens -Method Post -Body '{"auth" : {"RAX-KSKEY:apiKeyCredentials" : {"username" : "enter-username", "apiKey" : "fd9856e5leaf3984h5j72j78fea69f"}}}' -ContentType application/json
+$Auth = Invoke-RestMethod -Uri https://identity.api.rackspacecloud.com/v2.0/tokens -Method Post -Body $Creds -ContentType application/json
 $Auth | ConvertTo-Json -Depth 6 
 $token= $Auth.access.token.id 
 
-# 2 - list All fimages replace %CloudAccountNo%/ with your account number
-$ListImg = Invoke-RestMethod -Uri https://ORD.servers.api.rackspacecloud.com/v2/%CloudAccountNo%/images/detail -Method Get -Headers @{"X-Auth-Token"=$token} -ContentType application/json
+# 2 - list All fimages 
+$ListImg = Invoke-RestMethod -Uri https://ORD.servers.api.rackspacecloud.com/v2/$CloudAccountNum/images/detail -Method Get -Headers @{"X-Auth-Token"=$token} -ContentType application/json
 $AllImages  | ConvertTo-Json -Depth 6 
 $ListImg.images | Select-Object ID,name
 
 
-# 3 - list All flavors replace %CloudAccountNo%/ with your account number
-$ListFlv = Invoke-RestMethod -Uri https://ORD.servers.api.rackspacecloud.com/v2/%CloudAccountNo%//flavors -Method Get -Headers @{"X-Auth-Token"=$token} -ContentType application/json
+# 3 - list All flavors 
+$ListFlv = Invoke-RestMethod -Uri https://ORD.servers.api.rackspacecloud.com/v2/$CloudAccountNum//flavors -Method Get -Headers @{"X-Auth-Token"=$token} -ContentType application/json
 $ListFlv.flavors 
 
-# 4 - Create basic server replace %CloudAccountNo%/ with your account number
-#Change name, imageref and falvorRef as required 
-$CreateServer = Invoke-RestMethod -Uri "https://ORD.servers.api.rackspacecloud.com/v2/%CloudAccountNo%/servers" -Method Post -Headers @{"X-Auth-Token"=$token} -ContentType application/json -Body '{"server": {"name": "APItest","imageRef": "0b2bd620-142a-4cc8-8433-b8d3fb637632", "flavorRef": "4"}}'
+# 4 - Create basic server change name, imageref and falvorRef as required 
+$CreateServer = Invoke-RestMethod -Uri "https://ORD.servers.api.rackspacecloud.com/v2/$CloudAccountNum/servers" -Method Post -Headers @{"X-Auth-Token"=$token} -ContentType application/json -Body '{"server": {"name": "APItest","imageRef": "0b2bd620-142a-4cc8-8433-b8d3fb637632", "flavorRef": "4"}}'
 
 # 5 - List volumes to see which volumes are available and retreive IDs
 
-$ListVols = Invoke-RestMethod -Uri https://ORD.blockstorage.api.rackspacecloud.com/v1/%CloudAccountNo%/volumes -Method Get -Headers @{"X-Auth-Token"=$token} -ContentType application/json
+$ListVols = Invoke-RestMethod -Uri https://ORD.blockstorage.api.rackspacecloud.com/v1/$CloudAccountNum/volumes -Method Get -Headers @{"X-Auth-Token"=$token} -ContentType application/json
 $ListVols.volumes | Select-Object display_name,volume_type,id,size
 
 ###################################################################################################################
@@ -63,8 +81,8 @@ $obj = @{
 $JSON = $obj | ConvertTo-Json -Depth 10
 $JSON
 
-#Create a Boot From volume server using exisiting cloned BFV image  - replace %CloudAccountNo% with your account number
-$CreateBFVServer = Invoke-RestMethod -Uri "https://ORD.servers.api.rackspacecloud.com/v2/%CloudAccountNo%/servers" -Method Post -Headers @{"X-Auth-Token"=$token} -ContentType application/json -Body $JSON
+#Create a Boot From volume server using exisiting cloned BFV image  
+$CreateBFVServer = Invoke-RestMethod -Uri "https://ORD.servers.api.rackspacecloud.com/v2/$CloudAccountNum/servers" -Method Post -Headers @{"X-Auth-Token"=$token} -ContentType application/json -Body $JSON
 	
 ###################################################################################################################
 # 7 Create a BFV Volume, this creates a new server using an exisint Rackspace vanilla image
@@ -93,6 +111,6 @@ $obj = @{
 $JSON = $obj | ConvertTo-Json -Depth 10
 $JSON
 
-#Create a Boot From volume server using exisiting cloned BFV image  - replace %CloudAccountNo% with your account number
-$CreateBFVServer = Invoke-RestMethod -Uri "https://ORD.servers.api.rackspacecloud.com/v2/%CloudAccountNo%/os-volumes_boot" -Method Post -Headers @{"X-Auth-Token"=$token} -ContentType application/json -Body $JSON
+#Create a Boot From volume server using exisiting cloned BFV image 
+$CreateBFVServer = Invoke-RestMethod -Uri "https://ORD.servers.api.rackspacecloud.com/v2/$CloudAccountNum/os-volumes_boot" -Method Post -Headers @{"X-Auth-Token"=$token} -ContentType application/json -Body $JSON
 	
