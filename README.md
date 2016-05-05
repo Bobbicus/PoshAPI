@@ -1,4 +1,4 @@
-# PoshAPI
+# PoSh Rackspace Cloud API
 A basic guide to getting started using the Rackspace API using Powershell.   This give you the starting blocks to use the resources from the developer docs and pitchfork tools to replicate these in PowerShell. 
 
 
