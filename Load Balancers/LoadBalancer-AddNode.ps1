@@ -1,10 +1,9 @@
-﻿
-<#
+﻿<#
     .SYNOPSIS
-    Create a Rackspace cloud load balancer
+    Add nodes to a Cloud Load Balancer 
     
     .DESCRIPTION
-    Create a Rackspace cloud load balancer
+    Add nodes to a Cloud Load Balancer, this will list load balancers and then list the servers and let you choose which servers you want to add.  It uses the internal IP so is based on adding Rackspace cloud servers to CLB.
     
     .NOTES
     Author: Bob Larkin
@@ -14,7 +13,7 @@
 
 #>
 
-#Auhtenticate to Rackspack to retrieve API token update %username% and api key
+#Auhtenticate to Rackspace to retrieve API token update this uses creds stored in a csv referenced in PS profile
 $creds = Import-Csv $PoshAPIAccounts
 
 $region = $creds.Region
@@ -43,8 +42,6 @@ $token = $Auth.access.token.id
 
 
 #List Load Balancers
-
-
 $ListLB = Invoke-RestMethod -Uri "https://$Region.loadbalancers.api.rackspacecloud.com/v1.0/$CloudAccountNum/loadbalancers" -Method GET -Headers @{"X-Auth-Token"=$token} -ContentType application/json
 $CLBDetails = $ListLB.loadBalancers
 
@@ -66,18 +63,18 @@ foreach ($clb in $CLBDetails)
  
 $CLBList | ft
 
-#Request user input to pick the image they want to use
+#Request user input to pick the CLB they want to add node to
 $CLBNum = Read-Host "Enter number of Cloud Load Balancer you would like to use"
 $Userclb = $CLBList[$CLBNum]
 $CLBid = $Userclb.'CLB ID'
 $CLBName = $Userimg.'CLB Name'
 
-#List current Servers of the account
+#List current Servers on the account
 $ListServers = Invoke-RestMethod -Uri "https://$Region.servers.api.rackspacecloud.com/v2/$CloudAccountNum/servers/detail" -Method GET -Headers @{"X-Auth-Token"=$token} -ContentType application/json
 $Servers = $ListServers.servers
 $Servers.addresses.private
 
-#Create a numbered list of servers, find the private IP of the server 
+#Create a numbered list of servers, find the private IP of the server.  This is based on using Rackspace servers so we use internal rather than public IP
 $Num = 0
 $ServersList = @()
 foreach ($srv in $Servers)
@@ -96,18 +93,18 @@ foreach ($srv in $Servers)
 
 $ServersList  | ft
 
-#Request user input to pick the image they want to use
+#Request user input to pick the server they want to add to CLB
 $SrvNum = Read-Host "Number of cloud Server you want to add to CLB"
 $UserSrv = $ServersList[$SrvNum]
 $Srvid = $userSrv.'Server ID'
 $SrvName = $userSrv.'Server Name'
 $SrvIP = $userSrv.'Server IP'
 
-
+#Let user pick port that server will use port 80 or 8080 etc
 $Port = Read-Host "Enter Port to user for Node $SrvName"
 
 
-# create the Server using details provided. The below we create the JSON object first then pass this as a variable to the API request 
+#create the Server using details provided. The below we create the JSON object first then pass this as a variable to the API request 
 $obj = @{
     nodes = @(
                 @{
