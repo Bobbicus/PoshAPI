@@ -101,7 +101,7 @@ $ListVols = Invoke-RestMethod -Uri https://ORD.blockstorage.api.rackspacecloud.c
 $ListVols.volumes | Select-Object display_name,volume_type,id,size
 
 ###################################################################################################################
-#  7 - Create a an existing cloned boot from volume disk
+#  7 - Create a server from an existing cloned boot from volume disk
 ###################################################################################################################
 
 #Create JSON object for the API request. This example takes a powershell object and converts it to JSON
@@ -132,7 +132,7 @@ $JSON
 $CreateBFVServer = Invoke-RestMethod -Uri "https://ORD.servers.api.rackspacecloud.com/v2/$CloudAccountNum/servers" -Method Post -Headers @{"X-Auth-Token"=$token} -ContentType application/json -Body $JSON
 	
 ###################################################################################################################
-# 8 - Create a BFV Volume, this creates a new server using an exisint Rackspace vanilla image
+# 8 - Create a BFV Volume, this creates a new server using an existing Rackspace vanilla image
 ###################################################################################################################
 
 #Create JSON object for the API request.  This example takes a powershell object and converts it to JSON
@@ -158,7 +158,7 @@ $obj = @{
 $JSON = $obj | ConvertTo-Json -Depth 10
 $JSON
 
-#Create a Boot From volume server using exisiting cloned BFV image 
+#Create a Boot From volume server using vanilla Racksapce image 
 $CreateBFVServer = Invoke-RestMethod -Uri "https://ORD.servers.api.rackspacecloud.com/v2/$CloudAccountNum/os-volumes_boot" -Method Post -Headers @{"X-Auth-Token"=$token} -ContentType application/json -Body $JSON
 
 
