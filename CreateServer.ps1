@@ -1,4 +1,18 @@
 ﻿
+<#
+    .SYNOPSIS
+    Create a Rackspace cloud server
+    
+    .DESCRIPTION
+    Create a Rackspace cloud server.  Provides menu to pick flavor, image and Server name
+    
+    .NOTES
+    Author: Bob Larkin
+    Date: 05/05/2016
+    Version: 1.0
+
+
+#>
 
 #Auhtenticate to Rackspack to retrieve API token update %username% and api key 
 

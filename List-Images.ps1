@@ -1,4 +1,18 @@
-﻿
+﻿<#
+    .SYNOPSIS
+    List all Cloud Server images 
+    
+    .DESCRIPTION
+    List all Cloud Server images and creates a numbered menu for user selection. 
+    
+    .NOTES
+    Author: Bob Larkin
+    Date: 05/05/2016
+    Version: 1.0
+
+
+#>
+
 $ListImg = Invoke-RestMethod -Uri https://ORD.servers.api.rackspacecloud.com/v2/$CloudAccountNum/images/detail -Method Get -Headers @{"X-Auth-Token"=$token} -ContentType application/json
 $AllImages  | ConvertTo-Json -Depth 6 
 $ImgList = $ListImg.images | Select-Object ID,name

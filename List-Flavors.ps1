@@ -1,4 +1,18 @@
-﻿
+﻿<#
+    .SYNOPSIS
+    List all Cloud Server Flavors 
+    
+    .DESCRIPTION
+    List all Cloud Server Flavors and creates a numbered menu for user selection. 
+    
+    .NOTES
+    Author: Bob Larkin
+    Date: 05/05/2016
+    Version: 1.0
+
+
+#>
+
 $ListFlv = Invoke-RestMethod -Uri https://ORD.servers.api.rackspacecloud.com/v2/$CloudAccountNum//flavors -Method Get -Headers @{"X-Auth-Token"=$token} -ContentType application/json
 $Flavors = $ListFlv.flavors 
 

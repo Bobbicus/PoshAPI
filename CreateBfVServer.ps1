@@ -1,6 +1,17 @@
-﻿###################################################################################################################
-# Create a server from an existing cloned boot from volume disk
-###################################################################################################################
+﻿<#
+    .SYNOPSIS
+    Create a server from an existing cloned boot from volume disk
+    
+    .DESCRIPTION
+    Create a server from an existing cloned boot from volume disk.  Provides menu to pick flavor, Volume and Server name
+    
+    .NOTES
+    Author: Bob Larkin
+    Date: 05/05/2016
+    Version: 1.0
+
+
+#>
 
 #Auhtenticate to Rackspack to retrieve API token update %username% and api key 
 
