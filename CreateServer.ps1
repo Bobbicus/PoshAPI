@@ -14,11 +14,19 @@
 
 #>
 
-#Auhtenticate to Rackspack to retrieve API token update %username% and api key 
+#Auhtenticate to Rackspace to retrieve API token update %username% and api key 
+$creds = Import-Csv $PoshAPIAccounts
 
+$region = $creds.Region
+$CloudUsername = $creds.CloudUsername
+$APIkey = $creds.CloudAPIKey
+$CloudAccountNum = $creds.TenantId
+
+<#
 $CloudUsername = Read-Host "Enter cloud username"
 $APIkey = Read-Host "Enter API key"
 $CloudAccountNum = Read-Host "Enter cloud account number"
+#>
 
 $obj = @{
    auth = @{
