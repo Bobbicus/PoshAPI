@@ -5,6 +5,14 @@
     .DESCRIPTION
     Create a server from an existing cloned boot from volume disk.  Provides menu to pick flavor, Volume and Server name
     
+    If you update your profile C:\Users\%username%\Documents\WindowsPowerShell and add a variable like the one below;
+
+    $PoshAPIAccounts = "C:\Users\%username%\Documents\CloudAccounts1.csv"
+
+    You can then create the correpsonding csv file to store your credentials so you can use this instead of inputing these each time. I have just shown example of how this would look below
+
+    CloudUsername,CloudAPIKey,Region,TenantId %username%,gi89746emy5eut66fc59412qaraea93t,ORD,987654
+
     .NOTES
     Author: Bob Larkin
     Date: 05/05/2016
@@ -15,9 +23,13 @@
 
 #Auhtenticate to Rackspack to retrieve API token update %username% and api key 
 
-$CloudUsername = Read-Host "Enter cloud username"
-$APIkey = Read-Host "Enter API key"
-$CloudAccountNum = Read-Host "Enter cloud account number"
+$creds = Import-Csv $PoshAPIAccounts
+
+$Region = $creds.Region
+$CloudUsername = $creds.CloudUsername
+$APIkey = $creds.CloudAPIKey
+$CloudAccountNum = $creds.TenantId
+
 
 $obj = @{
    auth = @{
@@ -39,7 +51,7 @@ $Auth | ConvertTo-Json -Depth 6
 $token = $Auth.access.token.id 
 
 #List available Volumes for BfV 
-$ListVols = Invoke-RestMethod -Uri https://ORD.blockstorage.api.rackspacecloud.com/v1/$CloudAccountNum/volumes -Method Get -Headers @{"X-Auth-Token"=$token} -ContentType application/json
+$ListVols = Invoke-RestMethod -Uri https://$Region.blockstorage.api.rackspacecloud.com/v1/$CloudAccountNum/volumes -Method Get -Headers @{"X-Auth-Token"=$token} -ContentType application/json
 #Filter list to only show volumes with a status of available
 $VolList = $ListVols.volumes | Select-Object display_name,volume_type,id,size,status | Where {$_.Status -eq "available"}
 
@@ -73,7 +85,7 @@ $VolName = $UserVol.'Volume Name'
 
 Write-Host "Volume name: $VolName `n" -ForegroundColor Yellow
 
-$ListFlv = Invoke-RestMethod -Uri https://ORD.servers.api.rackspacecloud.com/v2/$CloudAccountNum//flavors -Method Get -Headers @{"X-Auth-Token"=$token} -ContentType application/json
+$ListFlv = Invoke-RestMethod -Uri https://$Region.servers.api.rackspacecloud.com/v2/$CloudAccountNum//flavors -Method Get -Headers @{"X-Auth-Token"=$token} -ContentType application/json
 $Flavors = $ListFlv.flavors 
 
 #Create Hashtable of Flavors and number the list 
@@ -145,7 +157,7 @@ $JSON = $obj | ConvertTo-Json -Depth 10
 $JSON
 
 #Create a Boot From volume server using exisiting cloned BFV image  
-$CreateBFVServer = Invoke-RestMethod -Uri "https://ORD.servers.api.rackspacecloud.com/v2/$CloudAccountNum/servers" -Method Post -Headers @{"X-Auth-Token"=$token} -ContentType application/json -Body $JSON
+$CreateBFVServer = Invoke-RestMethod -Uri https://$Region.servers.api.rackspacecloud.com/v2/$CloudAccountNum/servers -Method Post -Headers @{"X-Auth-Token"=$token} -ContentType application/json -Body $JSON
 
 
 Write-Host "Building Server " -ForegroundColor Green
