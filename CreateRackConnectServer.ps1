@@ -1,10 +1,10 @@
 ﻿
 <#
     .SYNOPSIS
-    Create a Rackspace cloud server
+    Create a Rackspace cloud server on a Rackconnect account
     
     .DESCRIPTION
-    Create a Rackspace cloud server.  Provides menu to pick flavor, image and Server name
+    Create a Rackspace cloud server on a Rackconnect account.  Provides menu to pick flavor, image and Server name
     
     .NOTES
     Author: Bob Larkin
