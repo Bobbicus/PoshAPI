@@ -17,7 +17,7 @@
 #Auhtenticate to Rackspace to retrieve API token update %username% and api key 
 $creds = Import-Csv $PoshAPIAccounts
 
-$region = $creds.Region
+$Region = $creds.Region
 $CloudUsername = $creds.CloudUsername
 $APIkey = $creds.CloudAPIKey
 $CloudAccountNum = $creds.TenantId
@@ -48,7 +48,7 @@ $Auth | ConvertTo-Json -Depth 6
 $token = $Auth.access.token.id 
 
 #List available images
-$ListImg = Invoke-RestMethod -Uri https://ORD.servers.api.rackspacecloud.com/v2/$CloudAccountNum/images/detail -Method Get -Headers @{"X-Auth-Token"=$token} -ContentType application/json
+$ListImg = Invoke-RestMethod -Uri https://$Region.servers.api.rackspacecloud.com/v2/$CloudAccountNum/images/detail -Method Get -Headers @{"X-Auth-Token"=$token} -ContentType application/json
 $AllImages  | ConvertTo-Json -Depth 6 
 $ImgList = $ListImg.images | Select-Object ID,name
 
@@ -79,7 +79,7 @@ $ImgName = $Userimg.'Image Name'
 
 Write-Host "Image name: $ImgName `n" -ForegroundColor Yellow
 
-$ListFlv = Invoke-RestMethod -Uri https://ORD.servers.api.rackspacecloud.com/v2/$CloudAccountNum//flavors -Method Get -Headers @{"X-Auth-Token"=$token} -ContentType application/json
+$ListFlv = Invoke-RestMethod -Uri https://$Region.servers.api.rackspacecloud.com/v2/$CloudAccountNum//flavors -Method Get -Headers @{"X-Auth-Token"=$token} -ContentType application/json
 $Flavors = $ListFlv.flavors 
 
 #Create Hashtable of Flavors and number the list 
@@ -122,19 +122,21 @@ if (-not $force) {
 
 # create the Server using details provided. The below we create the JSON object first then pass this as a variable to the API request 
 $obj = @{
-    server = @{
-        "name" = "$SrvName";
-        "flavorRef" = "$BuildFlv";
-        "imageRef" = "$Buildimg";
+        server = @{
+            "name" = "$SrvName";
+            "flavorRef" = "$BuildFlv";
+            "imageRef" = "$Buildimg";
+            }           
+
        
-        };
 };  
+
 
 $JSON = $obj | ConvertTo-Json -Depth 10
 $JSON
 
-$CreateServer = Invoke-RestMethod -Uri "https://ORD.servers.api.rackspacecloud.com/v2/$CloudAccountNum/servers" -Method Post -Headers @{"X-Auth-Token"=$token} -ContentType application/json -Body $JSON
-
+$CreateServer = Invoke-RestMethod -Uri https://$Region.servers.api.rackspacecloud.com/v2/$CloudAccountNum/servers -Method Post -Headers @{"X-Auth-Token"=$token} -ContentType application/json -Body $JSON
+  
 Write-Host "Building Server " -ForegroundColor Green
 $AdminPass = $CreateServer.server.adminPass
 Write-Host "Admin Password: $AdminPass " -ForegroundColor Green
